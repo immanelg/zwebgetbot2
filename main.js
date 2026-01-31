@@ -15,6 +15,13 @@ const bot = new TelegramBot(token, {polling: true});
 const fileExists = 
     async path => !!(await fs.promises.stat(path).catch(e => false));
 
+// bot.onText(/\/(start|help)/, async (msg, match) => {
+//     const chatId = msg.chat.id;
+//     const botMsg = await bot.sendMessage(chatId, 
+//         "Send me a URL and I will use the single-file CLI to bundle the page into index.html for you.\
+//         Source code: https://github.com/immanelg/zwebgetbot2");
+// });
+
 bot.onText(/(https?:\/\/)?(.*)/, async (msg, match) => {
     const chatId = msg.chat.id;
 
@@ -38,7 +45,7 @@ bot.onText(/(https?:\/\/)?(.*)/, async (msg, match) => {
         if (await fileExists(fsFilename))
             await bot.sendDocument(chatId, fsFilename, {}, { contentType: 'text/html', filename: "index.html" })
         else
-            await bot.editMessageText(`❌ Error! Exit code ${exitCode}, stderr: ${""}`, {chat_id: chatId, message_id: botMsg.message_id});
+            await bot.editMessageText(`❌ Error! single-file did not produce an output. stderr: ${""}`, {chat_id: chatId, message_id: botMsg.message_id});
         // fs.unlink(fsFilename, err => console.error(err));
     });
 });
